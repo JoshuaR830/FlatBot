@@ -35,9 +35,6 @@ app.post("/check-pending", (req, res) => {
 })
 
 app.get("/check-pending", (req, res) => {
-    if (!authenticateRequest(req.body.token)) { 
-        return;
-    }
     var hasPendingVersion = true;
 
     if (hasPendingVersion) {
@@ -50,9 +47,6 @@ app.get("/check-pending", (req, res) => {
 })
 
 app.get("/set-pending", (req, res) => {
-    if (!authenticateRequest(req.body.token)) { 
-        return;
-    }
     var successfullySet = true;
     if(successfullySet) {
         messageChannel.send("Pending version staged ready for deployment");
@@ -64,9 +58,6 @@ app.get("/set-pending", (req, res) => {
 })
 
 app.get("/deploy-pending", (req, res) => {
-    if (!authenticateRequest(req.body.token)) { 
-        return;
-    }
     var successfullyDeployed = true;
     if(successfullyDeployed) {
         messageChannel.send("Successfully deployed - ready for testing");
@@ -78,9 +69,6 @@ app.get("/deploy-pending", (req, res) => {
 })
 
 app.get("/confirm-pending", (req, res) => {
-    if (!authenticateRequest(req.body.token)) { 
-        return;
-    }
     var successfullyConfirmed = true;
     if(successfullyConfirmed) {
         messageChannel.send("Live instance updated\nTest instance removed");
@@ -92,9 +80,6 @@ app.get("/confirm-pending", (req, res) => {
 })
 
 app.get("/", (req, res) => {
-    if (!authenticateRequest(req.body.token)) { 
-        return;
-    }
     messageChannel.send("Efficiency ++");
     client.user.setActivity("Ready for your command!");
     res.status(200).send("Sent message to discord");
