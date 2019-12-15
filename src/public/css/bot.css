@@ -1,0 +1,44 @@
+body {
+    background-color: #000000;
+}
+
+.button {
+
+    border: 1px solid #000000;
+    border-radius: 16px;
+}
+
+.button:hover {
+    cursor: pointer;
+}
+
+.send {
+    background-color: #000000;
+}
+
+
+#send-button-icon {
+    fill: #ffffff;
+}
+
+#send-button-icon:hover {
+    animation-name: button-hover;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+}
+
+
+
+@keyframes button-hover {
+    0% {
+        fill: red;
+    }
+
+    50% {
+        fill: blue;
+    }
+
+    100% {
+        fill: red;
+    }
+}

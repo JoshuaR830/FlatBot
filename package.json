@@ -1,0 +1,24 @@
+{
+  "name": "shelljs",
+  "version": "1.0.0",
+  "description": "- A way to test our endpoints without needing facebook - Should just be a fun side project - Let's see how this goes!",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JoshuaR830/FlatBot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JoshuaR830/FlatBot/issues"
+  },
+  "homepage": "https://github.com/JoshuaR830/FlatBot#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "fs": "0.0.1-security"
+  }
+}
