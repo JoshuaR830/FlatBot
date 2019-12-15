@@ -4,7 +4,7 @@ const fetch = require('node-fetch');
 const bodyParser = require('body-parser')
 
 const app = express()
-app.use(bodyParser.json());
+app.use("/check-pending", bodyParser.json());
 
 var messageChannel;
 
