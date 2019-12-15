@@ -9,7 +9,7 @@ app.use(bodyParser.json());
 var messageChannel;
 
 function authenticateRequest(token) {
-    if (token === CONFIRM_TOKEN) {
+    if (token === process.env.CONFIRM_TOKEN) {
         return true;
     }
 
