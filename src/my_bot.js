@@ -3,49 +3,96 @@ const client = new discord.Client();
 require('dotenv').config();
 
 client.on('ready', () => {
-    console.log("Connected as " + client.user.tag);
-    client.guilds.forEach((guild) => {
-        console.log(" - " + guild.name); 
-        guild.channels.forEach((channel) => {
-            console.log(`   - ${channel.name} ${channel.type} - ${channel.id}`);
-        });
-    });
-
-    var testChannel = client.channels.get("655686477660815360");
-    testChannel.send("Hello World!");
-})
+    client.user.setActivity("Ready for your command!");
+});
 
 client.on('message', (message) => {
+
+    // Stop bot from replying to its messages
     if (message.author == client.user) {
         return;
     }
 
-    message.channel.send(`${message.author.toString()} message: ${message.content}`);
+    // You can only use the bot in the deployment channel
+    if (!(message.channel.name === "deployment")) {
+        return;
+    }
 
-    console.log(message.id.toString());
-    console.log(client.user.id);
-    console.log(message.content);
-    console.log(message.content.includes(client.user.toString()));
+    // Only people with the 'Tester' role can use the bot 
+    if (!message.member.roles.find(x => x.name.toLowerCase() === 'tester')) {
+        message.channel.send("Sorry - you are not a tester");
+        return;
+    }
+
+    // List commands you can use when you type help (or message containing help) - no need to tag the bot - but if you do it will still respond
+    if (message.content.toLowerCase().includes("help")) {
+        client.user.setActivity("Helping a friend!");
+        message.channel.send('Remember to tag me in your command')
+        message.channel.send(`check pending - check if there is already someting in testing environment\n`);
+        message.channel.send(`set pending <branch> - gets specified branch ready to deploy to test\n`);
+        message.channel.send(`deploy pending - spins up a container for the specified branch\n`);
+        message.channel.send(`confirm pending - tears down live container and creates a new one with the new code\n`);
+    }
+
+    // Checks bot was @tagged in the message before response
     if (message.content.includes(client.user.id)) {
         respondToMessages(message);
     }
-
-    if (message.content.toLowerCase() === ("help")) {
-        message.channel.send('Remember to tag me in your message')
-        message.channel.send(`deploy - used to deploy something\n other commands`);
-    }
-
-
 });
 
-function respondToMessages(message) {
-    console.log("Hi");
-    var command = message.content.split(" ")[1];
-    if (command.toLowerCase() == "deploy") {
-        message.channel.send("Oh you want to deploy something? Cool!");
-    }
-}
 
+// Responds to the messages
+function respondToMessages(message) {
+    var channel = message.channel;
+
+    // The @bot will be at [0] so command will be at 1
+    var command = message.content.split(" ")[1];
+    var arguments = message.content.split(" ").slice(2);
+    console.log(arguments);
+
+    command = command.toLowerCase();
+
+    if (command === "check") {
+        if (arguments[0] === "pending") {
+            channel.send("Can't check pending right now");
+            client.user.setActivity("Checking pending");
+        }
+
+        // Should check whether the test container is up - hit its url - response?
+        // If no response - good to go
+    }
+
+    if (command === "deploy") {
+        if (arguments[0] === "pending") {
+            channel.send("Can't deploy pending right now");
+            client.user.setActivity("Deploying pending");
+        }
+
+        // Should spin up a new test container
+        // To do this run a shell script that does it
+    }
+
+    if (command === "set") {
+        if (arguments[0] === "pending") {
+            channel.send(`Can't set ${arguments[1]} to pending right now`);
+            client.user.setActivity("Setting pending");
+        }
+
+        // Should pull the code for the specified branch
+    }
+
+    if (command === "confirm") {
+        if (arguments[0] === "pending") {
+            channel.send("Can't confirm pending right now");
+            client.user.setActivity("Confirming pending");
+        }
+
+        // Should remove test container
+        // Should restart live container with new code
+    }
+
+    client.user.setActivity("Ready for your command!");
+}
 
 bot_secret_token = process.env.DISCORD_SECRET_TOKEN;
 
