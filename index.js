@@ -3,7 +3,7 @@ const fetch = require('node-fetch');
 const bodyParser = require('body-parser')
 
 const app = express()
-app.use(bodyParser);
+app.use(bodyParser.json());
 
 var messageChannel;
 
