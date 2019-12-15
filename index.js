@@ -1,4 +1,5 @@
 const express = require('express');
+const fetch = require('node-fetch');
 
 const app = express()
 
@@ -129,6 +130,7 @@ function respondToMessages(message) {
 
     if (command === "check") {
         if (arguments[0] === "pending") {
+            fetch('http://www.flatfish.online:49163/check-pending');
             channel.send("Can't check pending right now");
             client.user.setActivity("Checking pending");
         }
@@ -139,6 +141,7 @@ function respondToMessages(message) {
 
     if (command === "deploy") {
         if (arguments[0] === "pending") {
+            fetch('http://www.flatfish.online:49163/check-deploy');
             channel.send("Can't deploy pending right now");
             client.user.setActivity("Deploying pending");
         }
@@ -149,6 +152,7 @@ function respondToMessages(message) {
 
     if (command === "set") {
         if (arguments[0] === "pending") {
+            fetch('http://www.flatfish.online:49163/set-pending');
             channel.send(`Can't set ${arguments[1]} to pending right now`);
             client.user.setActivity("Setting pending");
         }
@@ -158,6 +162,7 @@ function respondToMessages(message) {
 
     if (command === "confirm") {
         if (arguments[0] === "pending") {
+            fetch('http://www.flatfish.online:49163/confirm-pending');
             channel.send("Can't confirm pending right now");
             client.user.setActivity("Confirming pending");
         }
