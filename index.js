@@ -17,6 +17,7 @@ function authenticateRequest(token) {
 }
 
 app.post("/check-pending", (req, res) => {
+    console.log(body);
     console.log(req.body.token);
     console.log(req.body.hasPendingVersion);
     if (!authenticateRequest(req.body.token)) { 
