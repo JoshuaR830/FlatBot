@@ -1,9 +1,24 @@
 const express = require('express');
 const fetch = require('node-fetch');
+const bodyParser = require('body-parser')
 
 const app = express()
+app.use(bodyParser);
 
 var messageChannel;
+
+app.post("/check-pending", (req, res) => {
+    console.log("POST");
+    var hasPendingVersion = req.body.hasPendingVersion;
+    console.log(hasPendingVersion);
+    if (hasPendingVersion) {
+        messageChannel.send("Wait a minute - there's a pending version");
+    } else {
+        messageChannel.send("All clear - no pending versions");
+    }
+    client.user.setActivity("Ready for your command!");
+    res.status(200).send("Sent message to discord");
+})
 
 app.get("/check-pending", (req, res) => {
     var hasPendingVersion = true;
