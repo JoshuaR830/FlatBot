@@ -1,9 +1,40 @@
+const express = require('express');
+const bodyParser = require('body-parser');
+const shell = require('shelljs');
+
+const app = express().use(bodyParser.json());
+
+app.use(express.static('public'));
+
+var messageChannel;
+
+app.get("/", (req, res) => {
+    messageChannel.send("Efficiency ++");
+    res.status(200).send("Sent message to discord");
+})
+
+app.listen(8000, () => {
+	console.log('Listening on port 8000!');
+});
+
+
 const discord = require('discord.js');
 const client = new discord.Client();
 require('dotenv').config();
 
 client.on('ready', () => {
     client.user.setActivity("Ready for your command!");
+
+    // Sets the channel to send messages to
+    client.guilds.forEach((guild) => {
+        if (guild.name.toLowerCase() === "flatfish") {
+            guild.channels.forEach((channel) => {
+                if (channel.name.toLowerCase() === "deployment") {
+                    messageChannel = channel;
+                } 
+            });
+        }
+    });
 });
 
 client.on('message', (message) => {
@@ -44,6 +75,8 @@ client.on('message', (message) => {
 // Responds to the messages
 function respondToMessages(message) {
     var channel = message.channel;
+
+    console.log(message.channel);
 
     // The @bot will be at [0] so command will be at 1
     var command = message.content.split(" ")[1];
