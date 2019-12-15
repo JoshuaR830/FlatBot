@@ -1,15 +1,58 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const shell = require('shelljs');
 
-const app = express().use(bodyParser.json());
-
-app.use(express.static('public'));
+const app = express()
 
 var messageChannel;
 
+app.get("/check-pending", (req, res) => {
+    var hasPendingVersion = true;
+
+    if (hasPendingVersion) {
+        messageChannel.send("Wait a minute - there's a pending version");
+    } else {
+        messageChannel.send("All clear - no pending versions");
+    }
+    client.user.setActivity("Ready for your command!");
+    res.status(200).send("Sent message to discord");
+})
+
+app.get("/set-pending", (req, res) => {
+    var successfullySet = true;
+    if(successfullySet) {
+        messageChannel.send("Pending version staged ready for deployment");
+    } else {
+        messageChannel.send("Failed to stage");
+    }
+    client.user.setActivity("Ready for your command!");
+    res.status(200).send("Sent message to discord");
+})
+
+app.get("/deploy-pending", (req, res) => {
+    var successfullyDeployed = true;
+    if(successfullyDeployed) {
+        messageChannel.send("Successfully deployed - ready for testing");
+    } else {
+        messageChannel.send("Failed to stage");
+    }
+    client.user.setActivity("Ready for your command!");
+    res.status(200).send("Sent message to discord");
+})
+
+app.get("/confirm-pending", (req, res) => {
+    var successfullyConfirmed = true;
+    if(successfullyConfirmed) {
+        messageChannel.send("Live instance updated\nTest instance removed");
+    } else {
+        messageChannel.send("Failed to deploy to live");
+    }
+    client.user.setActivity("Ready for your command!");
+    res.status(200).send("Sent message to discord");
+})
+
 app.get("/", (req, res) => {
     messageChannel.send("Efficiency ++");
+    client.user.setActivity("Ready for your command!");
     res.status(200).send("Sent message to discord");
 })
 
@@ -123,8 +166,6 @@ function respondToMessages(message) {
         // Should remove test container
         // Should restart live container with new code
     }
-
-    client.user.setActivity("Ready for your command!");
 }
 
 bot_secret_token = process.env.DISCORD_SECRET_TOKEN;
