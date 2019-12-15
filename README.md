@@ -1,5 +1,5 @@
 # Deployment Dude
-- A discord bot used for managing deployment
+- A Discord bot used for managing deployment
 
 # Actions
 * check pending - check if there is already someting in testing environment
