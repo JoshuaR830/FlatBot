@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const fetch = require('node-fetch');
 const bodyParser = require('body-parser')
+const fetch = require('node-fetch');
 
 const app = express()
 app.use(bodyParser.json({
@@ -136,10 +137,19 @@ client.on('message', (message) => {
     if (message.content.toLowerCase().includes("help")) {
         client.user.setActivity("Helping a friend!");
         message.channel.send('Remember to tag me in your command')
-        message.channel.send(`check pending - check if there is already someting in testing environment\n`);
-        message.channel.send(`set pending <branch> - gets specified branch ready to deploy to test\n`);
-        message.channel.send(`deploy pending - spins up a container for the specified branch\n`);
-        message.channel.send(`confirm pending - tears down live container and creates a new one with the new code\n`);
+        // message.channel.send(`check pending - check if there is already someting in testing environment\n`);
+        // message.channel.send(`set pending <branch> - gets specified branch ready to deploy to test\n`);
+        // message.channel.send(`deploy pending - spins up a container for the specified branch\n`);
+        // message.channel.send(`confirm pending - tears down live container and creates a new one with the new code\n`);
+
+        message.channel.send(`
+        list deployable <project> -- Lists all branches with "r-" at the start that are up to date with master and pass jenkins\n
+        list testable <project> -- Lists all branches\n
+        deploy <branch> -- Where branch must be in "list deployable"\n
+        test <branch> -- pulls test branch and creates a docker test container for the code to run in
+        confirm deployable <project> -- Confirms the deployment container, merges it to master and updates the project's container
+        reject <deployable/testable> -- Takes down any deploy/test container thats running
+        `)
     }
 
     // Checks bot was @tagged in the message before response
@@ -162,6 +172,21 @@ function respondToMessages(message) {
 
     command = command.toLowerCase();
 
+    if (command === "list") {
+        if (arguments[0] === "testable") {
+            fetch('http://www.flatfish.online:49163/list-testable');
+            client.user.setActivity("Getting list of testable branches");
+        }
+
+        if (arguments[0] === "deployable") {
+            fetch('http://www.flatfish.online:49163/list-deployable');
+            client.user.setActivity("Getting list of deployable branches");
+        }
+
+        // Should check whether the test container is up - hit its url - response?
+        // If no response - good to go
+    }
+
     if (command === "check") {
         if (arguments[0] === "pending") {
             fetch('http://www.flatfish.online:49163/check-pending');
@@ -173,7 +198,40 @@ function respondToMessages(message) {
     }
 
     if (command === "deploy") {
+        url = 'http://www.flatfish.online:49163/deploy';
+        data = {"branch" : arguments[0]};
+        requestData = {"method": "POST", "body": data};
+        fetch(url, requestData);
+    }
+
+    if (command === "test") {
+        url = 'http://www.flatfish.online:49163/test';
+        data = {"branch" : arguments[0]};
+        requestData = {"method": "POST", "body": data};
+        fetch(url, requestData);
+    }
+
+    if (command === "confirm") {
+        if(arguments[1] === "deployable")
+        {
+            url = 'http://www.flatfish.online:49163/confirm-deploy';
+            data = {"branch" : arguments[1], "project": arguments[2]};
+            requestData = {"method": "POST", "body": data};
+            fetch(url, requestData);
+        }
+    }
+
+    if (command === "reject") {
+        url = 'http://www.flatfish.online:49163/reject';
+        data = {"type" : arguments[0]};
+        requestData = {"method": "POST", "body": data};
+        fetch(url, requestData);
+    }
+
+    if (command === "deploy") {
         if (arguments[0] === "pending") {
+
+            // Needs to post this - need to send project and branch
             fetch('http://www.flatfish.online:49163/deploy-pending');
             client.user.setActivity("Deploying pending");
         }
