@@ -137,13 +137,9 @@ client.on('message', (message) => {
     if (message.content.toLowerCase().includes("help")) {
         client.user.setActivity("Helping a friend!");
         message.channel.send('Remember to tag me in your command')
-        // message.channel.send(`check pending - check if there is already someting in testing environment\n`);
-        // message.channel.send(`set pending <branch> - gets specified branch ready to deploy to test\n`);
-        // message.channel.send(`deploy pending - spins up a container for the specified branch\n`);
-        // message.channel.send(`confirm pending - tears down live container and creates a new one with the new code\n`);
-
         message.channel.send(`
-        list deployable <project> -- Lists all branches with "r-" at the start that are up to date with master and pass jenkins\n
+        check <test/deploy> -- See if the environment is already in use
+        list <test/deploy> <project> -- Lists all branches with "r-" at the start that are up to date with master and pass jenkins\n
         list testable <project> -- Lists all branches\n
         deploy <branch> -- Where branch must be in "list deployable"\n
         test <branch> -- pulls test branch and creates a docker test container for the code to run in
@@ -157,7 +153,6 @@ client.on('message', (message) => {
         respondToMessages(message);
     }
 });
-
 
 // Responds to the messages
 function respondToMessages(message) {
@@ -173,27 +168,24 @@ function respondToMessages(message) {
     command = command.toLowerCase();
 
     if (command === "list") {
-        if (arguments[0] === "testable") {
-            fetch('http://www.flatfish.online:49163/list-testable');
-            client.user.setActivity("Getting list of testable branches");
-        }
+        url = 'http://www.flatfish.online:49163/list';
+        data = {"environment" : arguments[0]};
+        requestData = {"method": "POST", "body": data};
+        fetch(url, requestData);
+        client.user.setActivity(`Getting list of ${arguments[0]}able branches`);
 
-        if (arguments[0] === "deployable") {
-            fetch('http://www.flatfish.online:49163/list-deployable');
-            client.user.setActivity("Getting list of deployable branches");
-        }
-
-        // Should check whether the test container is up - hit its url - response?
-        // If no response - good to go
+        // Get a list of branches to display to the user for their given request
+        // Only show the ones that are eligible for testing
     }
 
     if (command === "check") {
-        if (arguments[0] === "pending") {
-            fetch('http://www.flatfish.online:49163/check-pending');
-            client.user.setActivity("Checking pending");
-        }
+        url = 'http://www.flatfish.online:49163/check';
+        data = {"environment" : arguments[0]};
+        requestData = {"method": "POST", "body": data};
+        fetch(url, requestData);
+        client.user.setActivity(`Checking if ${arguments[0]} environment is empty`);
 
-        // Should check whether the test container is up - hit its url - response?
+        // Should check whether the test/deployment environment is in use - hit its url - response?
         // If no response - good to go
     }
 
@@ -202,6 +194,10 @@ function respondToMessages(message) {
         data = {"branch" : arguments[0]};
         requestData = {"method": "POST", "body": data};
         fetch(url, requestData);
+        client.user.setActivity("Setting up deployment environment");
+        
+        // Should spin up a new development environment container for deployment candidate
+        // To do this run a shell script that does it
     }
 
     if (command === "test") {
@@ -209,6 +205,11 @@ function respondToMessages(message) {
         data = {"branch" : arguments[0]};
         requestData = {"method": "POST", "body": data};
         fetch(url, requestData);
+        client.user.setActivity("Setting up test environment");
+
+        // Should spin up a new test container for testing a branch - doesn't need to be up to date
+        // To do this run a shell script that does it
+        // will always run on same port
     }
 
     if (command === "confirm") {
@@ -218,6 +219,11 @@ function respondToMessages(message) {
             data = {"branch" : arguments[1], "project": arguments[2]};
             requestData = {"method": "POST", "body": data};
             fetch(url, requestData);
+            client.user.setActivity("Shipping the new version");
+            
+            // Should remove correct development environment container container
+            // Should restart live container with new code for the specified project
+            // Should make sure that it is merged into master
         }
     }
 
@@ -226,38 +232,10 @@ function respondToMessages(message) {
         data = {"type" : arguments[0]};
         requestData = {"method": "POST", "body": data};
         fetch(url, requestData);
-    }
+        client.user.setActivity(`Rejecting ${arguments[0]} environment`);
 
-    if (command === "deploy") {
-        if (arguments[0] === "pending") {
-
-            // Needs to post this - need to send project and branch
-            fetch('http://www.flatfish.online:49163/deploy-pending');
-            client.user.setActivity("Deploying pending");
-        }
-
-        // Should spin up a new test container
-        // To do this run a shell script that does it
-    }
-
-    if (command === "set") {
-        if (arguments[0] === "pending") {
-            fetch('http://www.flatfish.online:49163/set-pending');
-            // channel.send(`Can't set ${arguments[1]} to pending right now`);
-            client.user.setActivity("Setting pending");
-        }
-
-        // Should pull the code for the specified branch
-    }
-
-    if (command === "confirm") {
-        if (arguments[0] === "pending") {
-            fetch('http://www.flatfish.online:49163/confirm-pending');
-            client.user.setActivity("Confirming pending");
-        }
-
-        // Should remove test container
-        // Should restart live container with new code
+        // Destroy test/deployment environments without releasing
+        // Makes way for other tests
     }
 }
 
