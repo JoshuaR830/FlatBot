@@ -36,50 +36,131 @@ app.post("/check-pending", (req, res) => {
     res.status(200).send("Sent message to discord");
 })
 
-app.get("/check-pending", (req, res) => {
-    var hasPendingVersion = true;
+app.post("/list", (req, res) => {
+    if (!authenticateRequest(req.body.token)) { 
+        return;
+    }
+    let list = req.body.list;
 
-    if (hasPendingVersion) {
-        messageChannel.send("Wait a minute - there's a pending version");
+    message.send(`Here are all of the branches for ${req.body.environment}:`);
+    list.forEach(branch => message.send(`> ${branch}`))
+    client.user.setActivity("Ready for your command!");
+    res.status(200).send("Sent message to discord");
+})
+
+app.post("/check", (req, res) => {
+    if (!authenticateRequest(req.body.token)) { 
+        return;
+    }
+    let environment = req.body.environment;
+
+    if (req.body.hasPendingVersion) {
+        messageChannel.send(`Wait a minute - there's a pending version in the ${environment} environment`);
     } else {
-        messageChannel.send("All clear - no pending versions");
+        messageChannel.send(`All clear - no pending versions in the ${environment} environment`);
     }
     client.user.setActivity("Ready for your command!");
     res.status(200).send("Sent message to discord");
 })
 
-app.get("/set-pending", (req, res) => {
-    var successfullySet = true;
-    if(successfullySet) {
-        messageChannel.send("Pending version staged ready for deployment");
+app.post("/deploy", (req, res) => {
+    if (!authenticateRequest(req.body.token)) { 
+        return;
+    }
+
+    if (req.body.isInDeploy) {
+        message.send(`Successfully deployed ${req.body.branch} to dev`);
     } else {
-        messageChannel.send("Failed to stage");
+        message.send(`Failed to deploy ${req.body.branch} to dev`);
     }
     client.user.setActivity("Ready for your command!");
     res.status(200).send("Sent message to discord");
 })
 
-app.get("/deploy-pending", (req, res) => {
-    var successfullyDeployed = true;
-    if(successfullyDeployed) {
-        messageChannel.send("Successfully deployed - ready for testing");
+app.post("/testing", (req, res) => {
+    if (!authenticateRequest(req.body.token)) { 
+        return;
+    }
+
+    if (req.body.isInTest) {
+        message.send(`${req.body.branch} is in test environment `);
     } else {
-        messageChannel.send("Failed to stage");
+        message.send(`Failed to start test environment`);
     }
     client.user.setActivity("Ready for your command!");
     res.status(200).send("Sent message to discord");
 })
 
-app.get("/confirm-pending", (req, res) => {
-    var successfullyConfirmed = true;
-    if(successfullyConfirmed) {
-        messageChannel.send("Live instance updated\nTest instance removed");
+app.post("/confirm-deployable", (req, res) => {
+    if (!authenticateRequest(req.body.token)) { 
+        return;
+    }
+
+    if (req.body.isLive) {
+        message.send(`${req.body.project} successfully went live with ${req.body.branch}`);
     } else {
-        messageChannel.send("Failed to deploy to live");
+        message.send(`${req.body.project} failed to go live with ${req.body.branch}`);
     }
     client.user.setActivity("Ready for your command!");
     res.status(200).send("Sent message to discord");
 })
+
+app.post("/reject", (req, res) => {
+    if (!authenticateRequest(req.body.token)) { 
+        return;
+    }
+
+    if (req.body.isRejected) {
+        message.send(`${req.body.environment} has been rejected`);
+    } else {
+        message.send(`failed to reject ${req.body.environment}`);
+    }
+})
+
+// app.get("/check-pending", (req, res) => {
+//     var hasPendingVersion = true;
+
+//     if (hasPendingVersion) {
+//         messageChannel.send("Wait a minute - there's a pending version");
+//     } else {
+//         messageChannel.send("All clear - no pending versions");
+//     }
+//     client.user.setActivity("Ready for your command!");
+//     res.status(200).send("Sent message to discord");
+// })
+
+// app.get("/set-pending", (req, res) => {
+//     var successfullySet = true;
+//     if(successfullySet) {
+//         messageChannel.send("Pending version staged ready for deployment");
+//     } else {
+//         messageChannel.send("Failed to stage");
+//     }
+//     client.user.setActivity("Ready for your command!");
+//     res.status(200).send("Sent message to discord");
+// })
+
+// app.get("/deploy-pending", (req, res) => {
+//     var successfullyDeployed = true;
+//     if(successfullyDeployed) {
+//         messageChannel.send("Successfully deployed - ready for testing");
+//     } else {
+//         messageChannel.send("Failed to stage");
+//     }
+//     client.user.setActivity("Ready for your command!");
+//     res.status(200).send("Sent message to discord");
+// })
+
+// app.get("/confirm-pending", (req, res) => {
+//     var successfullyConfirmed = true;
+//     if(successfullyConfirmed) {
+//         messageChannel.send("Live instance updated\nTest instance removed");
+//     } else {
+//         messageChannel.send("Failed to deploy to live");
+//     }
+//     client.user.setActivity("Ready for your command!");
+//     res.status(200).send("Sent message to discord");
+// })
 
 app.get("/", (req, res) => {
     messageChannel.send("Efficiency ++");
