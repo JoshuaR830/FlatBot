@@ -283,7 +283,7 @@ app.post("/deploy", (req, res) => {
 // This will up a new docker container for a test candidate
 // A new instance of the server will be available
 // test.flatfish.online
-app.post("/testing", (req, res) => {
+app.post("/test", (req, res) => {
     if (!authenticateRequest(req.body.token)) { 
         return;
     }
