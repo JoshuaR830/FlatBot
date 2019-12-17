@@ -3,6 +3,7 @@ const express = require('express');
 const fetch = require('node-fetch');
 const bodyParser = require('body-parser')
 const fetch = require('node-fetch');
+const request = require('request');
 
 const app = express()
 app.use(bodyParser.json({
@@ -168,10 +169,15 @@ function respondToMessages(message) {
     command = command.toLowerCase();
 
     if (command === "list") {
-        url = 'http://www.flatfish.online:49163/list';
-        data = {"environment" : arguments[0]};
-        requestData = {"method": "POST", "body": data};
-        fetch(url, requestData);
+        request.post(
+            'http://www.flatfish.online:49163/list',
+            { json : { environment: arguments[0] } },
+            function (error, response, body) {
+                if (!error && response.statusCode == 200) {
+                    console.log(body);
+                }
+            }
+        );
         client.user.setActivity(`Getting list of ${arguments[0]}able branches`);
 
         // Get a list of branches to display to the user for their given request
@@ -179,10 +185,15 @@ function respondToMessages(message) {
     }
 
     if (command === "check") {
-        url = 'http://www.flatfish.online:49163/check';
-        data = {"environment" : arguments[0]};
-        requestData = {"method": "POST", "body": data};
-        fetch(url, requestData);
+        request.post(
+            'http://www.flatfish.online:49163/check',
+            { json : { environment: arguments[0] } },
+            function (error, response, body) {
+                if (!error && response.statusCode == 200) {
+                    console.log(body);
+                }
+            }
+        );
         client.user.setActivity(`Checking if ${arguments[0]} environment is empty`);
 
         // Should check whether the test/deployment environment is in use - hit its url - response?
@@ -190,10 +201,15 @@ function respondToMessages(message) {
     }
 
     if (command === "deploy") {
-        url = 'http://www.flatfish.online:49163/deploy';
-        data = {"branch" : arguments[0]};
-        requestData = {"method": "POST", "body": data};
-        fetch(url, requestData);
+        request.post(
+            'http://www.flatfish.online:49163/deploy',
+            { json : { branch: arguments[0] } },
+            function (error, response, body) {
+                if (!error && response.statusCode == 200) {
+                    console.log(body);
+                }
+            }
+        );
         client.user.setActivity("Setting up deployment environment");
         
         // Should spin up a new development environment container for deployment candidate
@@ -201,10 +217,15 @@ function respondToMessages(message) {
     }
 
     if (command === "test") {
-        url = 'http://www.flatfish.online:49163/test';
-        data = {"branch" : arguments[0]};
-        requestData = {"method": "POST", "body": data};
-        fetch(url, requestData);
+        request.post(
+            'http://www.flatfish.online:49163/test',
+            { json : { branch: arguments[0] } },
+            function (error, response, body) {
+                if (!error && response.statusCode == 200) {
+                    console.log(body);
+                }
+            }
+        );
         client.user.setActivity("Setting up test environment");
 
         // Should spin up a new test container for testing a branch - doesn't need to be up to date
@@ -215,10 +236,15 @@ function respondToMessages(message) {
     if (command === "confirm") {
         if(arguments[1] === "deployable")
         {
-            url = 'http://www.flatfish.online:49163/confirm-deploy';
-            data = {"branch" : arguments[1], "project": arguments[2]};
-            requestData = {"method": "POST", "body": data};
-            fetch(url, requestData);
+            request.post(
+                'http://www.flatfish.online:49163/confirm-deploy',
+                { json : { branch: arguments[1], project: arguments[2] } },
+                function (error, response, body) {
+                    if (!error && response.statusCode == 200) {
+                        console.log(body);
+                    }
+                }
+            );
             client.user.setActivity("Shipping the new version");
             
             // Should remove correct development environment container container
@@ -228,10 +254,15 @@ function respondToMessages(message) {
     }
 
     if (command === "reject") {
-        url = 'http://www.flatfish.online:49163/reject';
-        data = {"type" : arguments[0]};
-        requestData = {"method": "POST", "body": data};
-        fetch(url, requestData);
+        request.post(
+            'http://www.flatfish.online:49163/reject',
+            { json : { environment : arguments[0] } },
+            function (error, response, body) {
+                if (!error && response.statusCode == 200) {
+                    console.log(body);
+                }
+            }
+        );
         client.user.setActivity(`Rejecting ${arguments[0]} environment`);
 
         // Destroy test/deployment environments without releasing
