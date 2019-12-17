@@ -19,18 +19,10 @@ app.use(bodyParser.json({
     }
 }));
 
+
 app.listen(8000, () => {
 	console.log('Listening on port 8000!');
 });
-
-
-function authenticateRequest(token) {
-    if (token === process.env.CONFIRM_TOKEN) {
-        return true;
-    }
-
-    return false;
-}
 
 client.on('ready', () => {
     client.user.setActivity("Ready for your command!");
@@ -46,6 +38,17 @@ client.on('ready', () => {
         }
     });
 });
+
+
+
+function authenticateRequest(token) {
+    if (token === process.env.CONFIRM_TOKEN) {
+        return true;
+    }
+
+    return false;
+}
+
 
 // When a message is recieved some checks run
 client.on('message', (message) => {
@@ -323,3 +326,4 @@ app.get("/", (req, res) => {
     client.user.setActivity("Ready for your command!");
     res.status(200).send("Sent message to discord");
 })
+
