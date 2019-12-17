@@ -92,8 +92,15 @@ function respondToMessages(message) {
     var msg = message.content.slice(1);
 
     // The @bot will be at [0] so command will be at 1
-    var command = message.content.split(" ")[1];
-    var arguments = message.content.split(" ").slice(2);
+    if (message.content.includes(client.user.id)) {
+        var command = message.content.split(" ")[1];
+        var arguments = message.content.split(" ").slice(2);
+    } else {
+        var msg = message.content.slice(1);
+        var command = msg.split(" ")[0];
+        var arguments = msg.split(" ").slice(1);
+    }
+
     console.log(arguments);
 
     command = command.toLowerCase();
@@ -164,7 +171,7 @@ function respondToMessages(message) {
     }
 
     if (command === "confirm") {
-        if(arguments[1] === "deployable")
+        if(arguments[0] === "deployable")
         {
             request.post(
                 'http://www.flatfish.online:49163/confirm-deployable',
