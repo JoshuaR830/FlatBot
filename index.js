@@ -260,9 +260,9 @@ app.post("/deploy", (req, res) => {
     }
 
     if (req.body.isInDeploy) {
-        message.send(`Successfully deployed ${req.body.branch} to dev`);
+        messageChannel.send(`Successfully deployed ${req.body.branch} to dev`);
     } else {
-        message.send(`Failed to deploy ${req.body.branch} to dev`);
+        messageChannel.send(`Failed to deploy ${req.body.branch} to dev`);
     }
     client.user.setActivity("Ready for your command!");
     res.status(200).send("Sent message to discord");
@@ -277,9 +277,9 @@ app.post("/testing", (req, res) => {
     }
 
     if (req.body.isInTest) {
-        message.send(`${req.body.branch} is in test environment `);
+        messageChannel.send(`${req.body.branch} is in test environment `);
     } else {
-        message.send(`Failed to start test environment`);
+        messageChannel.send(`Failed to start test environment`);
     }
     client.user.setActivity("Ready for your command!");
     res.status(200).send("Sent message to discord");
@@ -293,9 +293,9 @@ app.post("/confirm-deployable", (req, res) => {
     }
 
     if (req.body.isLive) {
-        message.send(`${req.body.project} successfully went live with ${req.body.branch}`);
+        messageChannel.send(`${req.body.project} successfully went live with ${req.body.branch}`);
     } else {
-        message.send(`${req.body.project} failed to go live with ${req.body.branch}`);
+        messageChannel.send(`${req.body.project} failed to go live with ${req.body.branch}`);
     }
     client.user.setActivity("Ready for your command!");
     res.status(200).send("Sent message to discord");
@@ -309,9 +309,9 @@ app.post("/reject", (req, res) => {
     }
 
     if (req.body.isRejected) {
-        message.send(`${req.body.environment} has been rejected`);
+        messageChannel.send(`${req.body.environment} has been rejected`);
     } else {
-        message.send(`failed to reject ${req.body.environment}`);
+        messageChannel.send(`failed to reject ${req.body.environment}`);
     }
 })
 
