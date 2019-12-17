@@ -221,7 +221,6 @@ function sendHelp() {
     messageChannel.send(`
     check <test/deploy> -- See if the environment is already in use
     list <test/deploy> <project> -- Lists all branches with "r-" at the start that are up to date with master and pass jenkins
-    list testable <project> -- Lists all branches
     deploy <branch> -- Where branch must be in "list deployable"
     test <branch> -- pulls test branch and creates a docker test container for the code to run in
     confirm deployable <project> -- Confirms the deployment container, merges it to master and updates the project's container
