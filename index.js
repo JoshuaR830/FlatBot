@@ -208,8 +208,8 @@ function respondToMessages(message) {
 // Sends a help message to Discord - also updates status which is cool
 function sendHelp() {
     client.user.setActivity("Helping a friend!");
-    messageChannel.channel.send('Remember to tag me in your command')
-    messageChannel.channel.send(`
+    messageChannel.send('Remember to tag me in your command')
+    messageChannel.send(`
     check <test/deploy> -- See if the environment is already in use
     list <test/deploy> <project> -- Lists all branches with "r-" at the start that are up to date with master and pass jenkins
     list testable <project> -- Lists all branches
