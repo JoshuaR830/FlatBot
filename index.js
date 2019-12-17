@@ -23,16 +23,11 @@ function authenticateRequest(token) {
 }
 
 app.post("/check-pending", (req, res) => {
-    console.log(req.body);
-    console.log(req.body.token);
-    console.log(req.body.hasPendingVersion);
     if (!authenticateRequest(req.body.token)) { 
         return;
     }
-    console.log("POST");
-    var hasPendingVersion = req.body.hasPendingVersion;
-    console.log(hasPendingVersion);
-    if (hasPendingVersion) {
+    
+    if (req.body.hasPendingVersion) {
         messageChannel.send("Wait a minute - there's a pending version");
     } else {
         messageChannel.send("All clear - no pending versions");
