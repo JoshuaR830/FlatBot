@@ -76,7 +76,7 @@ client.on('message', (message) => {
 
     // Checks bot was @tagged in the message before response
     if (message.content.includes(client.user.id) || message.content.startsWith("!") || message.content.startsWith("/")) {
-        respondToMessages(message.content.slice(1));
+        respondToMessages();
     }
 });
 
@@ -89,9 +89,11 @@ function respondToMessages(message) {
 
     console.log(message.channel);
 
+    var msg = message.content.slice(1);
+
     // The @bot will be at [0] so command will be at 1
-    var command = message.content.split(" ")[1];
-    var arguments = message.content.split(" ").slice(2);
+    var command = msg.split(" ")[1];
+    var arguments = msg.split(" ").slice(2);
     console.log(arguments);
 
     command = command.toLowerCase();
