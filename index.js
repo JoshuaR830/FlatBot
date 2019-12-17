@@ -1,18 +1,28 @@
 require('dotenv').config();
 const express = require('express');
-const fetch = require('node-fetch');
 const bodyParser = require('body-parser')
-const fetch = require('node-fetch');
 const request = require('request');
+const discord = require('discord.js');
+const client = new discord.Client();
+require('dotenv').config();
 
 const app = express()
+
+var messageChannel;
+var bot_secret_token = process.env.DISCORD_SECRET_TOKEN;
+
+client.login(bot_secret_token);
+
 app.use(bodyParser.json({
     verify: function(req, res, buf, encoding) {
         console.log(buf.toString());
     }
 }));
 
-var messageChannel;
+app.listen(8000, () => {
+	console.log('Listening on port 8000!');
+});
+
 
 function authenticateRequest(token) {
     if (token === process.env.CONFIRM_TOKEN) {
@@ -21,161 +31,6 @@ function authenticateRequest(token) {
 
     return false;
 }
-
-app.post("/check-pending", (req, res) => {
-    if (!authenticateRequest(req.body.token)) { 
-        return;
-    }
-    
-    if (req.body.hasPendingVersion) {
-        messageChannel.send("Wait a minute - there's a pending version");
-    } else {
-        messageChannel.send("All clear - no pending versions");
-    }
-    client.user.setActivity("Ready for your command!");
-    res.status(200).send("Sent message to discord");
-})
-
-app.post("/list", (req, res) => {
-    if (!authenticateRequest(req.body.token)) { 
-        return;
-    }
-    let list = req.body.list;
-
-    message.send(`Here are all of the branches for ${req.body.environment}:`);
-    list.forEach(branch => message.send(`> ${branch}`))
-    client.user.setActivity("Ready for your command!");
-    res.status(200).send("Sent message to discord");
-})
-
-app.post("/check", (req, res) => {
-    if (!authenticateRequest(req.body.token)) { 
-        return;
-    }
-    let environment = req.body.environment;
-
-    if (req.body.hasPendingVersion) {
-        messageChannel.send(`Wait a minute - there's a pending version in the ${environment} environment`);
-    } else {
-        messageChannel.send(`All clear - no pending versions in the ${environment} environment`);
-    }
-    client.user.setActivity("Ready for your command!");
-    res.status(200).send("Sent message to discord");
-})
-
-app.post("/deploy", (req, res) => {
-    if (!authenticateRequest(req.body.token)) { 
-        return;
-    }
-
-    if (req.body.isInDeploy) {
-        message.send(`Successfully deployed ${req.body.branch} to dev`);
-    } else {
-        message.send(`Failed to deploy ${req.body.branch} to dev`);
-    }
-    client.user.setActivity("Ready for your command!");
-    res.status(200).send("Sent message to discord");
-})
-
-app.post("/testing", (req, res) => {
-    if (!authenticateRequest(req.body.token)) { 
-        return;
-    }
-
-    if (req.body.isInTest) {
-        message.send(`${req.body.branch} is in test environment `);
-    } else {
-        message.send(`Failed to start test environment`);
-    }
-    client.user.setActivity("Ready for your command!");
-    res.status(200).send("Sent message to discord");
-})
-
-app.post("/confirm-deployable", (req, res) => {
-    if (!authenticateRequest(req.body.token)) { 
-        return;
-    }
-
-    if (req.body.isLive) {
-        message.send(`${req.body.project} successfully went live with ${req.body.branch}`);
-    } else {
-        message.send(`${req.body.project} failed to go live with ${req.body.branch}`);
-    }
-    client.user.setActivity("Ready for your command!");
-    res.status(200).send("Sent message to discord");
-})
-
-app.post("/reject", (req, res) => {
-    if (!authenticateRequest(req.body.token)) { 
-        return;
-    }
-
-    if (req.body.isRejected) {
-        message.send(`${req.body.environment} has been rejected`);
-    } else {
-        message.send(`failed to reject ${req.body.environment}`);
-    }
-})
-
-// app.get("/check-pending", (req, res) => {
-//     var hasPendingVersion = true;
-
-//     if (hasPendingVersion) {
-//         messageChannel.send("Wait a minute - there's a pending version");
-//     } else {
-//         messageChannel.send("All clear - no pending versions");
-//     }
-//     client.user.setActivity("Ready for your command!");
-//     res.status(200).send("Sent message to discord");
-// })
-
-// app.get("/set-pending", (req, res) => {
-//     var successfullySet = true;
-//     if(successfullySet) {
-//         messageChannel.send("Pending version staged ready for deployment");
-//     } else {
-//         messageChannel.send("Failed to stage");
-//     }
-//     client.user.setActivity("Ready for your command!");
-//     res.status(200).send("Sent message to discord");
-// })
-
-// app.get("/deploy-pending", (req, res) => {
-//     var successfullyDeployed = true;
-//     if(successfullyDeployed) {
-//         messageChannel.send("Successfully deployed - ready for testing");
-//     } else {
-//         messageChannel.send("Failed to stage");
-//     }
-//     client.user.setActivity("Ready for your command!");
-//     res.status(200).send("Sent message to discord");
-// })
-
-// app.get("/confirm-pending", (req, res) => {
-//     var successfullyConfirmed = true;
-//     if(successfullyConfirmed) {
-//         messageChannel.send("Live instance updated\nTest instance removed");
-//     } else {
-//         messageChannel.send("Failed to deploy to live");
-//     }
-//     client.user.setActivity("Ready for your command!");
-//     res.status(200).send("Sent message to discord");
-// })
-
-app.get("/", (req, res) => {
-    messageChannel.send("Efficiency ++");
-    client.user.setActivity("Ready for your command!");
-    res.status(200).send("Sent message to discord");
-})
-
-app.listen(8000, () => {
-	console.log('Listening on port 8000!');
-});
-
-
-const discord = require('discord.js');
-const client = new discord.Client();
-require('dotenv').config();
 
 client.on('ready', () => {
     client.user.setActivity("Ready for your command!");
@@ -192,6 +47,7 @@ client.on('ready', () => {
     });
 });
 
+// When a message is recieved some checks run
 client.on('message', (message) => {
 
     // Stop bot from replying to its messages
@@ -212,17 +68,7 @@ client.on('message', (message) => {
 
     // List commands you can use when you type help (or message containing help) - no need to tag the bot - but if you do it will still respond
     if (message.content.toLowerCase().includes("help")) {
-        client.user.setActivity("Helping a friend!");
-        message.channel.send('Remember to tag me in your command')
-        message.channel.send(`
-        check <test/deploy> -- See if the environment is already in use
-        list <test/deploy> <project> -- Lists all branches with "r-" at the start that are up to date with master and pass jenkins\n
-        list testable <project> -- Lists all branches\n
-        deploy <branch> -- Where branch must be in "list deployable"\n
-        test <branch> -- pulls test branch and creates a docker test container for the code to run in
-        confirm deployable <project> -- Confirms the deployment container, merges it to master and updates the project's container
-        reject <deployable/testable> -- Takes down any deploy/test container thats running
-        `)
+        sendHelp();
     }
 
     // Checks bot was @tagged in the message before response
@@ -231,7 +77,10 @@ client.on('message', (message) => {
     }
 });
 
-// Responds to the messages
+// First stage to responding to messages handled here
+// The available commands are programmed in here
+// When commands all they do is send a post request to the backend bot project
+// That is where all of the magic will happen - e.g creating new containers, getting the lists
 function respondToMessages(message) {
     var channel = message.channel;
 
@@ -346,6 +195,131 @@ function respondToMessages(message) {
     }
 }
 
-bot_secret_token = process.env.DISCORD_SECRET_TOKEN;
 
-client.login(bot_secret_token);
+
+// This section deals with the response that the server sends back
+// The server sends back all of the values as post requests
+// All of the data can now be used to send messages back to the user
+
+
+// Sends a help message to Discord - also updates status which is cool
+function sendHelp() {
+    client.user.setActivity("Helping a friend!");
+    message.channel.send('Remember to tag me in your command')
+    message.channel.send(`
+    check <test/deploy> -- See if the environment is already in use
+    list <test/deploy> <project> -- Lists all branches with "r-" at the start that are up to date with master and pass jenkins
+    list testable <project> -- Lists all branches
+    deploy <branch> -- Where branch must be in "list deployable"
+    test <branch> -- pulls test branch and creates a docker test container for the code to run in
+    confirm deployable <project> -- Confirms the deployment container, merges it to master and updates the project's container
+    reject <deployable/testable> -- Takes down any deploy/test container thats running
+    `)
+}
+
+
+// Send a list back to the user
+// List contains all branches that can be used in specifieed environment
+// Certain conditions must be met for this
+app.post("/list", (req, res) => {
+    if (!authenticateRequest(req.body.token)) { 
+        return;
+    }
+    let list = req.body.list;
+
+    message.send(`Here are all of the branches for ${req.body.environment}:`);
+    list.forEach(branch => message.send(`> ${branch}`))
+    client.user.setActivity("Ready for your command!");
+    res.status(200).send("Sent message to discord");
+})
+
+
+// This checks the requested environment contains an incomplete test/deploy candidate
+// Will tell you to wait if there is another thing being tested/deployed
+app.post("/check", (req, res) => {
+    if (!authenticateRequest(req.body.token)) { 
+        return;
+    }
+    let environment = req.body.environment;
+
+    if (req.body.hasPendingVersion) {
+        messageChannel.send(`Wait a minute - there's a pending version in the ${environment} environment`);
+    } else {
+        messageChannel.send(`All clear - no pending versions in the ${environment} environment`);
+    }
+    client.user.setActivity("Ready for your command!");
+    res.status(200).send("Sent message to discord");
+})
+
+// This will up a new docker container for a deployment candidate
+// A new instance of the server will be available
+// deploy.flatfish.online
+app.post("/deploy", (req, res) => {
+    if (!authenticateRequest(req.body.token)) { 
+        return;
+    }
+
+    if (req.body.isInDeploy) {
+        message.send(`Successfully deployed ${req.body.branch} to dev`);
+    } else {
+        message.send(`Failed to deploy ${req.body.branch} to dev`);
+    }
+    client.user.setActivity("Ready for your command!");
+    res.status(200).send("Sent message to discord");
+})
+
+// This will up a new docker container for a test candidate
+// A new instance of the server will be available
+// test.flatfish.online
+app.post("/testing", (req, res) => {
+    if (!authenticateRequest(req.body.token)) { 
+        return;
+    }
+
+    if (req.body.isInTest) {
+        message.send(`${req.body.branch} is in test environment `);
+    } else {
+        message.send(`Failed to start test environment`);
+    }
+    client.user.setActivity("Ready for your command!");
+    res.status(200).send("Sent message to discord");
+})
+
+// When confirmed the code in the deployment candidate container will be removeed
+// The code will then go live - replacing the existing live environment
+app.post("/confirm-deployable", (req, res) => {
+    if (!authenticateRequest(req.body.token)) { 
+        return;
+    }
+
+    if (req.body.isLive) {
+        message.send(`${req.body.project} successfully went live with ${req.body.branch}`);
+    } else {
+        message.send(`${req.body.project} failed to go live with ${req.body.branch}`);
+    }
+    client.user.setActivity("Ready for your command!");
+    res.status(200).send("Sent message to discord");
+})
+
+// This will be used to tear down docker containers that have been finished with
+// Removes a test/deploy candidate from the container ready for someone else to use
+app.post("/reject", (req, res) => {
+    if (!authenticateRequest(req.body.token)) { 
+        return;
+    }
+
+    if (req.body.isRejected) {
+        message.send(`${req.body.environment} has been rejected`);
+    } else {
+        message.send(`failed to reject ${req.body.environment}`);
+    }
+})
+
+// Would be cool if going here gave you a nice page explaining how the bot works
+// Help to understand what to do
+// Also sends a help message to discord - how useful!
+app.get("/", (req, res) => {
+    sendHelp();
+    client.user.setActivity("Ready for your command!");
+    res.status(200).send("Sent message to discord");
+})
