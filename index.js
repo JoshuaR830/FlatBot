@@ -75,8 +75,8 @@ client.on('message', (message) => {
     }
 
     // Checks bot was @tagged in the message before response
-    if (message.content.includes(client.user.id)) {
-        respondToMessages(message);
+    if (message.content.includes(client.user.id) || message.content.startsWith("!") || message.content.startsWith("/")) {
+        respondToMessages(message.slice(1));
     }
 });
 
@@ -165,7 +165,7 @@ function respondToMessages(message) {
         if(arguments[1] === "deployable")
         {
             request.post(
-                'http://www.flatfish.online:49163/confirm-deploy',
+                'http://www.flatfish.online:49163/confirm-deployable',
                 { json : { branch: arguments[1], project: arguments[2] } },
                 function (error, response, body) {
                     if (!error && response.statusCode == 200) {
