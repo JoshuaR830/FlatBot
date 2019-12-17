@@ -76,7 +76,7 @@ client.on('message', (message) => {
 
     // Checks bot was @tagged in the message before response
     if (message.content.includes(client.user.id) || message.content.startsWith("!") || message.content.startsWith("/")) {
-        respondToMessages(message.slice(1));
+        respondToMessages(message.content.slice(1));
     }
 });
 
