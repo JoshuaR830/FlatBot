@@ -227,8 +227,8 @@ app.post("/list", (req, res) => {
     }
     let list = req.body.list;
 
-    message.send(`Here are all of the branches for ${req.body.environment}:`);
-    list.forEach(branch => message.send(`> ${branch}`))
+    messageChannel.send(`Here are all of the branches for ${req.body.environment}:`);
+    list.forEach(branch => messageChannel.send(`> ${branch}`))
     client.user.setActivity("Ready for your command!");
     res.status(200).send("Sent message to discord");
 })
